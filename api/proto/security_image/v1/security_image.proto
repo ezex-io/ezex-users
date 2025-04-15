@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package ezex.users.security_image.v1;
+
+option go_package = "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1;security_imagev1";
+
+// SecurityImageService provides operations for managing security images.
+service SecurityImageService {
+  // SaveSecurityImage saves a new security image for a user.
+  rpc SaveSecurityImage(SaveSecurityImageRequest) returns (SaveSecurityImageResponse) {}
+
+  // GetSecurityImage retrieves a security image by its ID.
+  rpc GetSecurityImage(GetSecurityImageRequest) returns (GetSecurityImageResponse) {}
+}
+
+// SaveSecurityImageRequest represents a request to save a security image.
+message SaveSecurityImageRequest {
+  // The unique identifier of the user who owns the security image.
+  string user_id = 1;
+  // The binary data of the security image in bytes.
+  bytes image_data = 2;
+}
+
+// SaveSecurityImageResponse represents the response after saving a security image.
+message SaveSecurityImageResponse {
+  // The unique identifier of the saved security image.
+  string image_id = 1;
+}
+
+// GetSecurityImageRequest represents a request to retrieve a security image.
+message GetSecurityImageRequest {
+  // The unique identifier of the security image to retrieve.
+  string image_id = 1;
+}
+
+// GetSecurityImageResponse represents the response containing a security image.
+message GetSecurityImageResponse {
+  // The binary data of the retrieved security image in bytes.
+  bytes image_data = 1;
+  // Additional metadata associated with the security image.
+  string metadata = 2;
+}
