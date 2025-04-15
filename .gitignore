@@ -1,0 +1,16 @@
+# Contains binary files
+build
+
+# Desktop Services Store for macOS
+.DS_Store
+
+# IDEs
+.idea
+.vscode
+
+# TODO tasks
+todo
+
+# VIM artifacts
+.swp
+.*.sw*
