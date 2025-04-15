@@ -1,3 +1,4 @@
+// Package main provides the entry point for the application.
 package main
 
 import (
@@ -38,22 +39,22 @@ func main() {
 	}
 
 	httpRouter := router.SetupRouter()
-	httpServer := server.NewHTTPServer(cfg.HTTPServer.Address, httpRouter)
+	httpServer := server.NewHTTPServer(cfg.HTTPServerAddress, httpRouter)
 
 	securityImageService := service.NewSecurityImageService(
 		repository.NewSecurityImageRepository(),
 	)
-	grpcServer := server.NewGRPCServer(cfg.GRPCServer.Address, securityImageService)
+	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, securityImageService)
 
 	go func() {
-		logging.Info("Starting HTTP server on %s", cfg.HTTPServer.Address)
+		logging.Info("Starting HTTP server on %s", cfg.HTTPServerAddress)
 		if err := httpServer.Start(); err != nil {
 			logging.Fatal("Failed to start HTTP server: %v", err)
 		}
 	}()
 
 	go func() {
-		logging.Info("Starting gRPC server on %s", cfg.GRPCServer.Address)
+		logging.Info("Starting gRPC server on %s", cfg.GRPCServerAddress)
 		if err := grpcServer.Start(); err != nil {
 			logging.Fatal("Failed to start gRPC server: %v", err)
 		}

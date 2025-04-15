@@ -19,12 +19,12 @@ func TestServerStartupAndShutdown(t *testing.T) {
 	}
 
 	httpRouter := router.SetupRouter()
-	httpServer := server.NewHTTPServer(cfg.HTTPServer.Address, httpRouter)
+	httpServer := server.NewHTTPServer(cfg.HTTPServerAddress, httpRouter)
 
 	securityImageService := service.NewSecurityImageService(
 		repository.NewSecurityImageRepository(),
 	)
-	grpcServer := server.NewGRPCServer(cfg.GRPCServer.Address, securityImageService)
+	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, securityImageService)
 
 	httpErr := make(chan error, 1)
 	grpcErr := make(chan error, 1)

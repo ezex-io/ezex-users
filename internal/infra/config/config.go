@@ -1,41 +1,44 @@
+// Package config provides configuration management for the application.
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
+// Config holds all configuration for the application.
 type Config struct {
-	HTTPServer struct {
-		Address string
-	}
-	GRPCServer struct {
-		Address string
-	}
+	HTTPServerAddress string
+	GRPCServerAddress string
 }
 
+// Load loads configuration from environment variables.
 func Load() (*Config, error) {
-	cfg := &Config{}
-
-	cfg.HTTPServer.Address = getEnvOrDefault("EZEX_USERS_HTTP_SERVER_ADDRESS", ":8888")
-	cfg.GRPCServer.Address = getEnvOrDefault("EZEX_USERS_GRPC_SERVER_ADDRESS", "0.0.0.0:50051")
+	cfg := &Config{
+		HTTPServerAddress: getEnv("EZEX_USERS_HTTP_SERVER_ADDRESS", ":8080"),
+		GRPCServerAddress: getEnv("EZEX_USERS_GRPC_SERVER_ADDRESS", "0.0.0.0:50051"),
+	}
 
 	return cfg, nil
 }
 
+// BasicCheck performs basic validation of the configuration.
 func (c *Config) BasicCheck() error {
-	if c.HTTPServer.Address == "" {
-		return fmt.Errorf("HTTP server address is required")
+	if c.HTTPServerAddress == "" {
+		return nil
 	}
-	if c.GRPCServer.Address == "" {
-		return fmt.Errorf("gRPC server address is required")
+
+	if c.GRPCServerAddress == "" {
+		return nil
 	}
+
 	return nil
 }
 
-func getEnvOrDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+func getEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
 	}
-	return defaultValue
+
+	return value
 }

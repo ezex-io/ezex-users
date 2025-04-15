@@ -1,3 +1,4 @@
+// Package repository provides data access implementations for the application.
 package repository
 
 import (
@@ -7,18 +8,17 @@ import (
 	"github.com/ezex-io/ezex-users/internal/core/port/repository"
 )
 
-type securityImageRepository struct {
-}
+type securityImageRepository struct{}
 
 func NewSecurityImageRepository() repository.SecurityImageRepository {
 	return &securityImageRepository{}
 }
 
-func (r *securityImageRepository) Save(ctx context.Context, image *entity.SecurityImage) error {
+func (securityImageRepository) Save(_ context.Context, _ *entity.SecurityImage) error {
 	return nil
 }
 
-func (r *securityImageRepository) GetByID(ctx context.Context, id string) (*entity.SecurityImage, error) {
+func (securityImageRepository) GetByID(_ context.Context, id string) (*entity.SecurityImage, error) {
 	return &entity.SecurityImage{
 		ID:        id,
 		Metadata:  "foo",

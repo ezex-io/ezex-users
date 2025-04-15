@@ -1,3 +1,4 @@
+// Package server provides server implementations for HTTP and gRPC.
 package server
 
 import (
@@ -5,7 +6,7 @@ import (
 	"fmt"
 	"net"
 
-	security_imagev1 "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1"
+	securityimagev1 "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"google.golang.org/grpc"
 )
@@ -17,7 +18,7 @@ type GRPCServer struct {
 
 func NewGRPCServer(address string, securityImageService service.SecurityImageService) *GRPCServer {
 	s := grpc.NewServer()
-	security_imagev1.RegisterSecurityImageServiceServer(s, NewSecurityImageServer(securityImageService))
+	securityimagev1.RegisterSecurityImageServiceServer(s, NewSecurityImageServer(securityImageService))
 
 	return &GRPCServer{
 		server:  s,
@@ -28,10 +29,14 @@ func NewGRPCServer(address string, securityImageService service.SecurityImageSer
 func (s *GRPCServer) Start() error {
 	lis, err := net.Listen("tcp", s.address)
 	if err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
+		return fmt.Errorf("failed to listen: %w", err)
 	}
 
-	return s.server.Serve(lis)
+	if err := s.server.Serve(lis); err != nil {
+		return fmt.Errorf("failed to serve: %w", err)
+	}
+
+	return nil
 }
 
 func (s *GRPCServer) Stop(ctx context.Context) error {
@@ -44,7 +49,8 @@ func (s *GRPCServer) Stop(ctx context.Context) error {
 	select {
 	case <-ctx.Done():
 		s.server.Stop()
-		return ctx.Err()
+
+		return fmt.Errorf("failed to stop gRPC server: %w", ctx.Err())
 	case <-done:
 		return nil
 	}

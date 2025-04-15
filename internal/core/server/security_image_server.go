@@ -2,15 +2,16 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 
-	security_imagev1 "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1"
+	securityimagev1 "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 )
 
 type SecurityImageServer struct {
-	security_imagev1.UnimplementedSecurityImageServiceServer
+	securityimagev1.UnimplementedSecurityImageServiceServer
 	service service.SecurityImageService
 }
 
@@ -20,48 +21,33 @@ func NewSecurityImageServer(service service.SecurityImageService) *SecurityImage
 	}
 }
 
-func (s *SecurityImageServer) SaveSecurityImage(ctx context.Context, req *security_imagev1.SaveSecurityImageRequest) (*security_imagev1.SaveSecurityImageResponse, error) {
-	return &security_imagev1.SaveSecurityImageResponse{
+func (*SecurityImageServer) SaveSecurityImage(
+	_ context.Context,
+	_ *securityimagev1.SaveSecurityImageRequest,
+) (*securityimagev1.SaveSecurityImageResponse, error) {
+	return &securityimagev1.SaveSecurityImageResponse{
 		ImageId: "image-id",
 	}, nil
-
-	// resp, err := s.service.SaveSecurityImage(ctx, &dto.SaveSecurityImageRequest{
-	// 	UserID:    req.UserId,
-	// 	ImageData: req.ImageData,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return &api.SaveSecurityImageResponse{
-	// 	ImageId: resp.ImageID,
-	// }, nil
 }
 
-func (s *SecurityImageServer) GetSecurityImage(ctx context.Context, req *security_imagev1.GetSecurityImageRequest) (*security_imagev1.GetSecurityImageResponse, error) {
+func (*SecurityImageServer) GetSecurityImage(
+	_ context.Context,
+	_ *securityimagev1.GetSecurityImageRequest,
+) (*securityimagev1.GetSecurityImageResponse, error) {
 	// return moon.png and return with "foo" metadata
 	wd, err := os.Getwd()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get working directory: %w", err)
 	}
+
 	imagePath := filepath.Join(wd, "moon.png")
 	imageData, err := os.ReadFile(imagePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read image file: %w", err)
 	}
 
-	return &security_imagev1.GetSecurityImageResponse{
+	return &securityimagev1.GetSecurityImageResponse{
 		ImageData: imageData,
 		Metadata:  "foo",
 	}, nil
-
-	// resp, err := s.service.GetSecurityImage(ctx, &dto.GetSecurityImageRequest{
-	// 	ImageID: req.ImageId,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return &api.GetSecurityImageResponse{
-	// 	ImageData: resp.ImageData,
-	// 	Metadata:  resp.Metadata,
-	// }, nil
 }

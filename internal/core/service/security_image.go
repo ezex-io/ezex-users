@@ -1,7 +1,9 @@
+// Package service provides the security image service.
 package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ezex-io/ezex-users/internal/core/entity"
@@ -10,17 +12,20 @@ import (
 	"github.com/ezex-io/ezex-users/internal/core/port/repository"
 )
 
-type securityImageService struct {
+type SecurityImageService struct {
 	repo repository.SecurityImageRepository
 }
 
-func NewSecurityImageService(repo repository.SecurityImageRepository) *securityImageService {
-	return &securityImageService{
+func NewSecurityImageService(repo repository.SecurityImageRepository) *SecurityImageService {
+	return &SecurityImageService{
 		repo: repo,
 	}
 }
 
-func (s *securityImageService) SaveSecurityImage(ctx context.Context, req *request.SaveSecurityImageRequest) (*response.SaveSecurityImageResponse, error) {
+func (s *SecurityImageService) SaveSecurityImage(
+	ctx context.Context,
+	req *request.SaveSecurityImageRequest,
+) (*response.SaveSecurityImageResponse, error) {
 	image := &entity.SecurityImage{
 		ID:        generateID(),
 		UserID:    req.UserID,
@@ -29,7 +34,7 @@ func (s *securityImageService) SaveSecurityImage(ctx context.Context, req *reque
 	}
 
 	if err := s.repo.Save(ctx, image); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to save security image: %w", err)
 	}
 
 	return &response.SaveSecurityImageResponse{
@@ -37,10 +42,13 @@ func (s *securityImageService) SaveSecurityImage(ctx context.Context, req *reque
 	}, nil
 }
 
-func (s *securityImageService) GetSecurityImage(ctx context.Context, req *request.GetSecurityImageRequest) (*response.GetSecurityImageResponse, error) {
+func (s *SecurityImageService) GetSecurityImage(
+	ctx context.Context,
+	req *request.GetSecurityImageRequest,
+) (*response.GetSecurityImageResponse, error) {
 	image, err := s.repo.GetByID(ctx, req.ImageID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get security image: %w", err)
 	}
 
 	return &response.GetSecurityImageResponse{
