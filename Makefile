@@ -1,6 +1,6 @@
 BINARY_NAME = ezex-users
 BUILD_DIR = build
-CMD_DIR = internal/cmd/server/main.go
+CMD_DIR = internal/cmd/main.go
 
 # Default target
 all: build test
@@ -45,8 +45,6 @@ check:
 .PHONY: fmt check
 	go build -o ./bin/ezex-users$(EXE) ./cmd/server.go
 
-build_race:
-	go build -race -o ./bin/ezex-users$(EXE) ./cmd/server.go
 ########################################
 ### Proto
 proto:
@@ -75,6 +73,6 @@ docker-run:
 
 .PHONY: docker docker-build docker-run
 .PHONY: devtools proto docker
-.PHONY: build release
 .PHONY: test
 .PHONY: fmt check
+.PHONY: run build release clean

@@ -2,10 +2,11 @@
 package request
 
 type SaveSecurityImageRequest struct {
-	UserID    string
-	ImageData []byte
+	UserID         string
+	SecurityImage  string
+	SecurityPhrase string
 }
 
 type GetSecurityImageRequest struct {
-	ImageID string
+	UserID string
 }

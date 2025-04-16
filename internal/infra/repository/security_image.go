@@ -20,8 +20,8 @@ func (securityImageRepository) Save(_ context.Context, _ *entity.SecurityImage) 
 
 func (securityImageRepository) GetByID(_ context.Context, id string) (*entity.SecurityImage, error) {
 	return &entity.SecurityImage{
-		ID:        id,
-		Metadata:  "foo",
-		ImageData: []byte{},
+		UserID:         id,
+		SecurityImage:  "moon.png",
+		SecurityPhrase: "foo",
 	}, nil
 }

@@ -1,11 +1,10 @@
 // Package response provides response models for the application.
 package response
 
-type SaveSecurityImageResponse struct {
-	ImageID string
-}
+type SaveSecurityImageResponse struct{}
 
 type GetSecurityImageResponse struct {
-	ImageData []byte
-	Metadata  string
+	UserID         string
+	SecurityImage  string
+	SecurityPhrase string
 }

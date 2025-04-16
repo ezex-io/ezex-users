@@ -18,126 +18,126 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// UsersServiceClient is the client API for UsersService service.
+// UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UsersServiceClient interface {
+type UserServiceClient interface {
 	// SaveSecurityImage saves a new security image for a user.
 	SaveSecurityImage(ctx context.Context, in *SaveSecurityImageRequest, opts ...grpc.CallOption) (*SaveSecurityImageResponse, error)
 	// GetSecurityImage retrieves a security image by its ID.
 	GetSecurityImage(ctx context.Context, in *GetSecurityImageRequest, opts ...grpc.CallOption) (*GetSecurityImageResponse, error)
 }
 
-type usersServiceClient struct {
+type userServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUsersServiceClient(cc grpc.ClientConnInterface) UsersServiceClient {
-	return &usersServiceClient{cc}
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
 }
 
-func (c *usersServiceClient) SaveSecurityImage(ctx context.Context, in *SaveSecurityImageRequest, opts ...grpc.CallOption) (*SaveSecurityImageResponse, error) {
+func (c *userServiceClient) SaveSecurityImage(ctx context.Context, in *SaveSecurityImageRequest, opts ...grpc.CallOption) (*SaveSecurityImageResponse, error) {
 	out := new(SaveSecurityImageResponse)
-	err := c.cc.Invoke(ctx, "/user.UsersService/SaveSecurityImage", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/SaveSecurityImage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *usersServiceClient) GetSecurityImage(ctx context.Context, in *GetSecurityImageRequest, opts ...grpc.CallOption) (*GetSecurityImageResponse, error) {
+func (c *userServiceClient) GetSecurityImage(ctx context.Context, in *GetSecurityImageRequest, opts ...grpc.CallOption) (*GetSecurityImageResponse, error) {
 	out := new(GetSecurityImageResponse)
-	err := c.cc.Invoke(ctx, "/user.UsersService/GetSecurityImage", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetSecurityImage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UsersServiceServer is the server API for UsersService service.
-// All implementations must embed UnimplementedUsersServiceServer
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
-type UsersServiceServer interface {
+type UserServiceServer interface {
 	// SaveSecurityImage saves a new security image for a user.
 	SaveSecurityImage(context.Context, *SaveSecurityImageRequest) (*SaveSecurityImageResponse, error)
 	// GetSecurityImage retrieves a security image by its ID.
 	GetSecurityImage(context.Context, *GetSecurityImageRequest) (*GetSecurityImageResponse, error)
-	mustEmbedUnimplementedUsersServiceServer()
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-// UnimplementedUsersServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedUsersServiceServer struct {
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUsersServiceServer) SaveSecurityImage(context.Context, *SaveSecurityImageRequest) (*SaveSecurityImageResponse, error) {
+func (UnimplementedUserServiceServer) SaveSecurityImage(context.Context, *SaveSecurityImageRequest) (*SaveSecurityImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveSecurityImage not implemented")
 }
-func (UnimplementedUsersServiceServer) GetSecurityImage(context.Context, *GetSecurityImageRequest) (*GetSecurityImageResponse, error) {
+func (UnimplementedUserServiceServer) GetSecurityImage(context.Context, *GetSecurityImageRequest) (*GetSecurityImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSecurityImage not implemented")
 }
-func (UnimplementedUsersServiceServer) mustEmbedUnimplementedUsersServiceServer() {}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
-// UnsafeUsersServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UsersServiceServer will
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
 // result in compilation errors.
-type UnsafeUsersServiceServer interface {
-	mustEmbedUnimplementedUsersServiceServer()
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-func RegisterUsersServiceServer(s grpc.ServiceRegistrar, srv UsersServiceServer) {
-	s.RegisterService(&UsersService_ServiceDesc, srv)
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UsersService_SaveSecurityImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_SaveSecurityImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SaveSecurityImageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServiceServer).SaveSecurityImage(ctx, in)
+		return srv.(UserServiceServer).SaveSecurityImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UsersService/SaveSecurityImage",
+		FullMethod: "/user.UserService/SaveSecurityImage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServiceServer).SaveSecurityImage(ctx, req.(*SaveSecurityImageRequest))
+		return srv.(UserServiceServer).SaveSecurityImage(ctx, req.(*SaveSecurityImageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UsersService_GetSecurityImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetSecurityImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSecurityImageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServiceServer).GetSecurityImage(ctx, in)
+		return srv.(UserServiceServer).GetSecurityImage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UsersService/GetSecurityImage",
+		FullMethod: "/user.UserService/GetSecurityImage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServiceServer).GetSecurityImage(ctx, req.(*GetSecurityImageRequest))
+		return srv.(UserServiceServer).GetSecurityImage(ctx, req.(*GetSecurityImageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// UsersService_ServiceDesc is the grpc.ServiceDesc for UsersService service.
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UsersService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user.UsersService",
-	HandlerType: (*UsersServiceServer)(nil),
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "user.UserService",
+	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SaveSecurityImage",
-			Handler:    _UsersService_SaveSecurityImage_Handler,
+			Handler:    _UserService_SaveSecurityImage_Handler,
 		},
 		{
 			MethodName: "GetSecurityImage",
-			Handler:    _UsersService_GetSecurityImage_Handler,
+			Handler:    _UserService_GetSecurityImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,8 +2,7 @@
 package entity
 
 type SecurityImage struct {
-	ID        string
-	UserID    string
-	ImageData []byte
-	Metadata  string
+	UserID         string
+	SecurityImage  string
+	SecurityPhrase string
 }

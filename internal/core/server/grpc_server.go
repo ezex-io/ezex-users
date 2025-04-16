@@ -16,9 +16,9 @@ type GRPCServer struct {
 	address string
 }
 
-func NewGRPCServer(address string, userService service.UserService) *GRPCServer {
+func NewGRPCServer(address string, service service.Service) *GRPCServer {
 	s := grpc.NewServer()
-	proto.RegisterUsersServiceServer(s, NewUserServer(userService))
+	proto.RegisterUserServiceServer(s, NewUserServer(service.User()))
 
 	return &GRPCServer{
 		server:  s,

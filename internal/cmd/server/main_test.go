@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/ezex-io/ezex-users/internal/config"
+	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"github.com/ezex-io/ezex-users/internal/core/server"
-	"github.com/ezex-io/ezex-users/internal/core/service"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
 )
 
@@ -17,10 +17,9 @@ func TestServerStartupAndShutdown(t *testing.T) {
 		t.Fatalf("Failed to load config: %v", err)
 	}
 
-	securityImageService := service.NewSecurityImageService(
-		repository.NewSecurityImageRepository(),
-	)
-	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, securityImageService)
+	service := service.NewService(repository.NewRepository())
+
+	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, service)
 
 	grpcErr := make(chan error, 1)
 
