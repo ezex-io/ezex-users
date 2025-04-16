@@ -8,8 +8,8 @@ import (
 	"github.com/ezex-io/ezex-users/internal/core/model/response"
 )
 
-// SecurityImageService defines the interface for security image operations.
-type SecurityImageService interface {
+// UserService defines the interface for user operations.
+type UserService interface {
 	// SaveSecurityImage saves a security image and returns its ID.
 	SaveSecurityImage(
 		ctx context.Context,

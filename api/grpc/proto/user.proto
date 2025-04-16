@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package ezex.users.security_image.v1;
+package user;
 
-option go_package = "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1;security_imagev1";
+option go_package = "github.com/ezex-io/ezex-users/api/grpc/proto";
 
-// SecurityImageService provides operations for managing security images.
-service SecurityImageService {
+// UsersService provides operations for managing users.
+service UsersService {
   // SaveSecurityImage saves a new security image for a user.
   rpc SaveSecurityImage(SaveSecurityImageRequest) returns (SaveSecurityImageResponse) {}
 

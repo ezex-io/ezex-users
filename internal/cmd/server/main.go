@@ -1,9 +1,8 @@
-// Package cmd provides the main entry point for the application.
-package cmd
+// Package main provides the main entry point for the application.
+package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,10 +17,10 @@ import (
 
 var log = logger.NewSlog(nil)
 
-func Run() error {
+func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
+		log.Fatal("Failed to load config", "error", err)
 	}
 
 	repo := repository.NewSecurityImageRepository()
@@ -33,7 +32,6 @@ func Run() error {
 	log.Info("Starting gRPC server", "address", cfg.GRPCServerAddress)
 	if err := grpcServer.Start(); err != nil {
 		log.Error("Failed to start gRPC server", "error", err)
-		return err
 	}
 
 	quit := make(chan os.Signal, 1)
@@ -45,8 +43,5 @@ func Run() error {
 
 	if err := grpcServer.Stop(ctx); err != nil {
 		log.Error("Failed to stop gRPC server", "error", err)
-		return err
 	}
-
-	return nil
 }

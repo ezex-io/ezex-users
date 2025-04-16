@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
 
-	securityimagev1 "github.com/ezex-io/ezex-users/api/gen/go/security_image/v1"
+	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"google.golang.org/grpc"
 )
@@ -16,9 +16,9 @@ type GRPCServer struct {
 	address string
 }
 
-func NewGRPCServer(address string, securityImageService service.SecurityImageService) *GRPCServer {
+func NewGRPCServer(address string, userService service.UserService) *GRPCServer {
 	s := grpc.NewServer()
-	securityimagev1.RegisterSecurityImageServiceServer(s, NewSecurityImageServer(securityImageService))
+	proto.RegisterUsersServiceServer(s, NewUserServer(userService))
 
 	return &GRPCServer{
 		server:  s,
