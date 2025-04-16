@@ -1,80 +1,52 @@
-// Package main provides the entry point for the application.
-package main
+// Package cmd provides the main entry point for the application.
+package cmd
 
 import (
 	"context"
-	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"github.com/ezex-io/ezex-users/internal/core/common/router"
+	"github.com/ezex-io/ezex-users/internal/config"
 	"github.com/ezex-io/ezex-users/internal/core/server"
 	"github.com/ezex-io/ezex-users/internal/core/service"
-	"github.com/ezex-io/ezex-users/internal/infra/config"
-	"github.com/ezex-io/ezex-users/internal/infra/logger"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
-	"github.com/joho/godotenv"
+	"github.com/ezex-io/gopkg/logger"
 )
 
-func main() {
-	envFile := flag.String("env", ".env.example", "Path to environment file")
-	flag.Parse()
+var log = logger.NewSlog(nil)
 
-	logging := logger.NewSlog(nil)
-
-	if err := godotenv.Load(*envFile); err != nil {
-		logging.Warn("Failed to load env file '%s': %v. Continuing with system environment...", *envFile, err)
-	} else {
-		logging.Debug("Loaded environment variables from '%s'", *envFile)
-	}
-
+func Run() error {
 	cfg, err := config.Load()
 	if err != nil {
-		logging.Fatal("Failed to load config: %v", err)
+		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	if err := cfg.BasicCheck(); err != nil {
-		logging.Fatal("Configuration validation failed: %v", err)
-	}
+	repo := repository.NewSecurityImageRepository()
 
-	httpRouter := router.SetupRouter()
-	httpServer := server.NewHTTPServer(cfg.HTTPServerAddress, httpRouter)
+	securityImageService := service.NewSecurityImageService(repo)
 
-	securityImageService := service.NewSecurityImageService(
-		repository.NewSecurityImageRepository(),
-	)
 	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, securityImageService)
 
-	go func() {
-		logging.Info("Starting HTTP server on %s", cfg.HTTPServerAddress)
-		if err := httpServer.Start(); err != nil {
-			logging.Fatal("Failed to start HTTP server: %v", err)
-		}
-	}()
-
-	go func() {
-		logging.Info("Starting gRPC server on %s", cfg.GRPCServerAddress)
-		if err := grpcServer.Start(); err != nil {
-			logging.Fatal("Failed to start gRPC server: %v", err)
-		}
-	}()
+	log.Info("Starting gRPC server", "address", cfg.GRPCServerAddress)
+	if err := grpcServer.Start(); err != nil {
+		log.Error("Failed to start gRPC server", "error", err)
+		return err
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	logging.Info("Shutting down servers...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if err := httpServer.Stop(ctx); err != nil {
-		logging.Fatal("Failed to stop HTTP server: %v", err)
-	}
 
 	if err := grpcServer.Stop(ctx); err != nil {
-		logging.Fatal("Failed to stop gRPC server: %v", err)
+		log.Error("Failed to stop gRPC server", "error", err)
+		return err
 	}
 
-	logging.Info("Servers stopped")
+	return nil
 }
