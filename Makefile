@@ -1,6 +1,6 @@
 BINARY_NAME = ezex-users
 BUILD_DIR = build
-CMD_DIR = internal/cmd/main.go
+CMD_DIR = internal/cmd/server/main.go
 
 # Default target
 all: build test
@@ -43,7 +43,7 @@ check:
 .PHONY: build release
 .PHONY: test
 .PHONY: fmt check
-	go build -o ./bin/ezex-users$(EXE) ./cmd/server.go
+	go build -o ./bin/ezex-users$(EXE) ./cmd/server/main.go
 
 ########################################
 ### Proto

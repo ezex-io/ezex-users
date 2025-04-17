@@ -1,40 +1,47 @@
-// Package cmd provides the main entry point for the application.
-package cmd
+// Package main provides the main entry point for the application.
+package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/config"
+	"github.com/ezex-io/ezex-users/internal/controller"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"github.com/ezex-io/ezex-users/internal/core/server"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
 	"github.com/ezex-io/gopkg/logger"
+	"google.golang.org/grpc"
 )
 
-var log = logger.NewSlog(nil)
-
-func Run() error {
+func main() {
+	log := logger.NewSlog(nil)
 	cfg, err := config.Load()
 	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
+		log.Error("Failed to load config", "error", err)
+
+		return
 	}
 
 	repo := repository.NewRepository()
 
 	svc := service.NewService(repo)
 
-	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, svc)
+	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress)
 
 	log.Info("Starting gRPC server", "address", cfg.GRPCServerAddress)
-	if err := grpcServer.Start(); err != nil {
+	if err := grpcServer.Start(
+		func(s *grpc.Server) {
+			proto.RegisterUserServiceServer(s, controller.NewUserServer(svc.User()))
+		},
+	); err != nil {
 		log.Error("Failed to start gRPC server", "error", err)
 
-		return fmt.Errorf("failed to start gRPC server: %w", err)
+		return
 	}
 
 	quit := make(chan os.Signal, 1)
@@ -43,12 +50,9 @@ func Run() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	go func() {
+		grpcServer.Stop()
+	}()
 
-	if err := grpcServer.Stop(ctx); err != nil {
-		log.Error("Failed to stop gRPC server", "error", err)
-
-		return fmt.Errorf("failed to stop gRPC server: %w", err)
-	}
-
-	return nil
+	<-ctx.Done()
 }

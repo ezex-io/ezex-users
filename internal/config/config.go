@@ -2,8 +2,6 @@
 package config
 
 import (
-	"errors"
-
 	"github.com/ezex-io/gopkg/env"
 )
 
@@ -17,12 +15,4 @@ func Load() (*Config, error) {
 	}
 
 	return cfg, nil
-}
-
-func (c *Config) BasicCheck() error {
-	if c.GRPCServerAddress == "" {
-		return errors.New("GRPCServerAddress is not set")
-	}
-
-	return nil
 }

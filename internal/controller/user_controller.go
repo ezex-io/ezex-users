@@ -1,4 +1,5 @@
-package server
+// Package controller provides the controller for the user service.
+package controller
 
 import (
 	"context"

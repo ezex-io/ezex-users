@@ -1,14 +1,16 @@
-package cmd
+package main
 
 import (
-	"context"
 	"testing"
 	"time"
 
+	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/config"
+	"github.com/ezex-io/ezex-users/internal/controller"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"github.com/ezex-io/ezex-users/internal/core/server"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
+	"google.golang.org/grpc"
 )
 
 func TestServerStartupAndShutdown(t *testing.T) {
@@ -19,22 +21,19 @@ func TestServerStartupAndShutdown(t *testing.T) {
 
 	service := service.NewService(repository.NewRepository())
 
-	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress, service)
+	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress)
 
 	grpcErr := make(chan error, 1)
 
 	go func() {
-		grpcErr <- grpcServer.Start()
+		grpcErr <- grpcServer.Start(func(s *grpc.Server) {
+			proto.RegisterUserServiceServer(s, controller.NewUserServer(service.User()))
+		})
 	}()
 
 	time.Sleep(100 * time.Millisecond)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
-
-	if err := grpcServer.Stop(ctx); err != nil {
-		t.Errorf("Failed to stop gRPC server: %v", err)
-	}
+	grpcServer.Stop()
 
 	select {
 	case err := <-grpcErr:

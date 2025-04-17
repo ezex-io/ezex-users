@@ -1,57 +1,40 @@
-// Package server provides server implementations for HTTP and gRPC.
+// Package server provides server implementations for the application.
 package server
 
 import (
-	"context"
 	"fmt"
 	"net"
 
-	"github.com/ezex-io/ezex-users/api/grpc/proto"
-	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"google.golang.org/grpc"
 )
 
 type GRPCServer struct {
-	server  *grpc.Server
-	address string
+	server *grpc.Server
+	addr   string
 }
 
-func NewGRPCServer(address string, service service.Service) *GRPCServer {
-	s := grpc.NewServer()
-	proto.RegisterUserServiceServer(s, NewUserServer(service.User()))
-
+func NewGRPCServer(addr string) *GRPCServer {
 	return &GRPCServer{
-		server:  s,
-		address: address,
+		server: grpc.NewServer(),
+		addr:   addr,
 	}
 }
 
-func (s *GRPCServer) Start() error {
-	lis, err := net.Listen("tcp", s.address)
+func (s *GRPCServer) Start(register func(*grpc.Server)) error {
+	listener, err := net.Listen("tcp", s.addr)
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 
-	if err := s.server.Serve(lis); err != nil {
+	register(s.server)
+
+	if err := s.server.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}
 
 	return nil
 }
 
-func (s *GRPCServer) Stop(ctx context.Context) error {
-	done := make(chan bool)
-	go func() {
-		s.server.GracefulStop()
-		done <- true
-	}()
-
-	select {
-	case <-ctx.Done():
-		s.server.Stop()
-
-		return fmt.Errorf("failed to stop gRPC server: %w", ctx.Err())
-	case <-done:
-		return nil
-	}
+func (s *GRPCServer) Stop() {
+	s.server.GracefulStop()
 }
