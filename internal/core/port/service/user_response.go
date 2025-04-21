@@ -1,5 +1,4 @@
-// Package response provides response models for the application.
-package response
+package service
 
 type SaveSecurityImageResponse struct{}
 

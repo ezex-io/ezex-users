@@ -1,5 +1,4 @@
-// Package request provides request models for the application.
-package request
+package service
 
 type SaveSecurityImageRequest struct {
 	UserID         string

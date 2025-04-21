@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ezex-io/ezex-users/api/grpc/proto"
-	"github.com/ezex-io/ezex-users/internal/core/model/request"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 )
 
@@ -25,7 +24,7 @@ func (s *UserServer) SaveSecurityImage(
 	ctx context.Context,
 	req *proto.SaveSecurityImageRequest,
 ) (*proto.SaveSecurityImageResponse, error) {
-	_, err := s.service.SaveSecurityImage(ctx, &request.SaveSecurityImageRequest{
+	_, err := s.service.SaveSecurityImage(ctx, &service.SaveSecurityImageRequest{
 		UserID:         req.UserId,
 		SecurityImage:  req.SecurityImage,
 		SecurityPhrase: req.SecurityPhrase,
@@ -41,7 +40,7 @@ func (s *UserServer) GetSecurityImage(
 	ctx context.Context,
 	req *proto.GetSecurityImageRequest,
 ) (*proto.GetSecurityImageResponse, error) {
-	resp, err := s.service.GetSecurityImage(ctx, &request.GetSecurityImageRequest{
+	resp, err := s.service.GetSecurityImage(ctx, &service.GetSecurityImageRequest{
 		UserID: req.UserId,
 	})
 	if err != nil {
