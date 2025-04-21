@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package user;
+package ezex_users;
 
-option go_package = "github.com/ezex-io/ezex-users/api/grpc/proto";
+option go_package = "github.com/ezex-io/ezex-users/pkg/grpc/ezex_users";
 
-// UserService provides operations for managing users.
-service UserService {
+// UsersService provides operations for managing users.
+service UsersService {
   // SaveSecurityImage saves a new security image for a user.
   rpc SaveSecurityImage(SaveSecurityImageRequest) returns (SaveSecurityImageResponse) {}
 

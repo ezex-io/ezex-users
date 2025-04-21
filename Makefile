@@ -1,6 +1,6 @@
 BINARY_NAME = ezex-users
 BUILD_DIR = build
-CMD_DIR = internal/cmd/server/main.go
+CMD_DIR = ./internal/cmd/server/
 
 # Default target
 all: build test
@@ -48,9 +48,11 @@ check:
 ########################################
 ### Proto
 proto:
-	protoc --go_out ./api/grpc/proto --go_opt paths=source_relative \
-           --go-grpc_out ./api/grpc/proto --go-grpc_opt paths=source_relative \
-	       --proto_path=./api/grpc/proto api/grpc/proto/*.proto
+	@mkdir -p ./pkg/grpc
+	protoc --go_out=./pkg/grpc --go_opt paths=source_relative \
+		   --go-grpc_out=./pkg/grpc --go-grpc_opt paths=source_relative \
+		   --proto_path=./pkg/proto ./pkg/proto/*.proto
+
 ########################################
 ### Run
 run: build

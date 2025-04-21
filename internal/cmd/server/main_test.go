@@ -4,12 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/config"
 	"github.com/ezex-io/ezex-users/internal/controller"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"github.com/ezex-io/ezex-users/internal/core/server"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
+	userspb "github.com/ezex-io/ezex-users/pkg/grpc"
 	"google.golang.org/grpc"
 )
 
@@ -27,7 +27,7 @@ func TestServerStartupAndShutdown(t *testing.T) {
 
 	go func() {
 		grpcErr <- grpcServer.Start(func(s *grpc.Server) {
-			proto.RegisterUserServiceServer(s, controller.NewUserServer(service.User()))
+			userspb.RegisterUsersServiceServer(s, controller.NewUserServer(service.User()))
 		})
 	}()
 

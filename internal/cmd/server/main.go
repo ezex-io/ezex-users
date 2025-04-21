@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/config"
 	"github.com/ezex-io/ezex-users/internal/controller"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
 	"github.com/ezex-io/ezex-users/internal/core/server"
 	"github.com/ezex-io/ezex-users/internal/infra/repository"
+	userspb "github.com/ezex-io/ezex-users/pkg/grpc"
 	"github.com/ezex-io/gopkg/logger"
 	"google.golang.org/grpc"
 )
@@ -36,7 +36,7 @@ func main() {
 	log.Info("Starting gRPC server", "address", cfg.GRPCServerAddress)
 	if err := grpcServer.Start(
 		func(s *grpc.Server) {
-			proto.RegisterUserServiceServer(s, controller.NewUserServer(svc.User()))
+			userspb.RegisterUsersServiceServer(s, controller.NewUserServer(svc.User()))
 		},
 	); err != nil {
 		log.Error("Failed to start gRPC server", "error", err)

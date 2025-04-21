@@ -5,25 +5,25 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ezex-io/ezex-users/api/grpc/proto"
 	"github.com/ezex-io/ezex-users/internal/core/port/service"
+	userspb "github.com/ezex-io/ezex-users/pkg/grpc"
 )
 
-type UserServer struct {
-	proto.UnimplementedUserServiceServer
+type UsersServer struct {
+	userspb.UnimplementedUsersServiceServer
 	service service.UserService
 }
 
-func NewUserServer(service service.UserService) *UserServer {
-	return &UserServer{
+func NewUserServer(service service.UserService) *UsersServer {
+	return &UsersServer{
 		service: service,
 	}
 }
 
-func (s *UserServer) SaveSecurityImage(
+func (s *UsersServer) SaveSecurityImage(
 	ctx context.Context,
-	req *proto.SaveSecurityImageRequest,
-) (*proto.SaveSecurityImageResponse, error) {
+	req *userspb.SaveSecurityImageRequest,
+) (*userspb.SaveSecurityImageResponse, error) {
 	_, err := s.service.SaveSecurityImage(ctx, &service.SaveSecurityImageRequest{
 		UserID:         req.UserId,
 		SecurityImage:  req.SecurityImage,
@@ -33,13 +33,13 @@ func (s *UserServer) SaveSecurityImage(
 		return nil, fmt.Errorf("failed to save security image: %w", err)
 	}
 
-	return &proto.SaveSecurityImageResponse{}, nil
+	return &userspb.SaveSecurityImageResponse{}, nil
 }
 
-func (s *UserServer) GetSecurityImage(
+func (s *UsersServer) GetSecurityImage(
 	ctx context.Context,
-	req *proto.GetSecurityImageRequest,
-) (*proto.GetSecurityImageResponse, error) {
+	req *userspb.GetSecurityImageRequest,
+) (*userspb.GetSecurityImageResponse, error) {
 	resp, err := s.service.GetSecurityImage(ctx, &service.GetSecurityImageRequest{
 		UserID: req.UserId,
 	})
@@ -47,7 +47,7 @@ func (s *UserServer) GetSecurityImage(
 		return nil, fmt.Errorf("failed to get security image: %w", err)
 	}
 
-	return &proto.GetSecurityImageResponse{
+	return &userspb.GetSecurityImageResponse{
 		UserId:         resp.UserID,
 		SecurityImage:  resp.SecurityImage,
 		SecurityPhrase: resp.SecurityPhrase,
