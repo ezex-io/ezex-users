@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package ezex_users;
+
+option go_package = "github.com/ezex-io/ezex-users/pkg/grpc/ezex_users";
+
+// UsersService provides operations for managing users.
+service UsersService {
+  // SaveSecurityImage saves a new security image for a user.
+  rpc SaveSecurityImage(SaveSecurityImageRequest) returns (SaveSecurityImageResponse) {}
+
+  // GetSecurityImage retrieves a security image by its ID.
+  rpc GetSecurityImage(GetSecurityImageRequest) returns (GetSecurityImageResponse) {}
+}
+
+// SaveSecurityImageRequest represents a request to save a security image.
+message SaveSecurityImageRequest {
+  // The unique identifier of the user who owns the security image.
+  string user_id = 1;
+  // Image selected by the user to confirm authentic login page.
+  string security_image = 2;
+  // Phrase set by the user to confirm authentic login page.
+  string security_phrase = 3;
+}
+
+// SaveSecurityImageResponse represents the response after saving a security image.
+message SaveSecurityImageResponse {}
+
+// GetSecurityImageRequest represents a request to retrieve a security image.
+message GetSecurityImageRequest {
+  // The unique identifier of the user who owns the security image.
+  string user_id = 1;
+}
+
+// GetSecurityImageResponse represents the response containing a security image.
+message GetSecurityImageResponse {
+   // The unique identifier of the user who owns the security image.
+   string user_id = 1;
+   // Image selected by the user to confirm authentic login page.
+   string security_image = 2;
+   // Phrase set by the user to confirm authentic login page.
+   string security_phrase = 3;
+}
