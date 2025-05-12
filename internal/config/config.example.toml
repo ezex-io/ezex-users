@@ -1,0 +1,64 @@
+# Root configuration
+development = true
+
+[grpc]
+address = "0.0.0.0"
+ports = 50052
+enable_reflection = false
+enable_health = false
+
+[database]
+# PostgreSQL host address
+host = "localhost"
+
+# PostgreSQL port number
+port = "5433"
+
+# PostgreSQL user
+username = "postgres"
+
+# PostgreSQL password (empty by default)
+password = ""
+
+# PostgreSQL database name
+database = "ezex-users"
+
+# SSL mode: disable, require, verify-ca, or verify-full
+sslmode = "disable"
+
+# PostgreSQL timezone (e.g., UTC, Asia/Tehran)
+timezone = "UTC"
+
+# Maximum number of open DB connections
+max_open_conns = 25
+
+# Maximum number of idle DB connections
+max_idle_conns = 5
+
+# Maximum lifetime of a DB connection before recycling (e.g., "30m")
+conn_max_lifetime = "30m"
+
+[logger]
+# Use colored log output
+colorful = true
+
+# Max number of rotated log files to keep (0 = unlimited)
+max_backups = 0
+
+# Number of days after which logs are rotated
+rotate_log_after_days = 1
+
+# Compress rotated logs
+compress = true
+
+# Logging targets (e.g., "console", "file")
+targets = ['console']
+
+[logger.levels]
+# Log levels for specific subsystems/components
+_grpc = 'info'
+_interactor = 'warn'
+_database = 'warn'
+_cache = 'warn'
+_migration = 'info'
+default = 'info'
