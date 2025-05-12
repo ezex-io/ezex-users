@@ -11,6 +11,9 @@ build
 # TODO tasks
 todo
 
+# config
+config.toml
+
 # VIM artifacts
 .swp
 .*.sw*

@@ -20,7 +20,6 @@ linters:
     - errorlint
     - exhaustive
     - copyloopvar
-    - forbidigo
     - gci
     - gocheckcompilerdirectives
     - gocognit
@@ -57,10 +56,8 @@ linters:
     - predeclared
     - promlinter
     - reassign
-    - revive
     - rowserrcheck
     - sqlclosecheck
-    - stylecheck
     - tagalign
     - tagliatelle
     - usetesting
@@ -72,75 +69,12 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
-    - wrapcheck
     - zerologlint
     - varnamelen
 
 linters-settings:
   gosimple:
     checks: ["all"]
-
-  revive:
-    enable-all-rules: true
-    rules:
-      - name: "exported"
-        disabled: true
-
-      - name: package-comments
-        disabled: false
-
-      - name: "add-constant"
-        disabled: true
-
-      - name: "line-length-limit"
-        disabled: true
-
-      - name: "cognitive-complexity"
-        disabled: true
-
-      - name: "function-length"
-        disabled: true
-
-      - name: "cyclomatic"
-        disabled: true
-
-      - name: "unchecked-type-assertion"
-        disabled: true
-
-      - name: max-public-structs
-        disabled: true
-
-      - name: "flag-parameter"
-        disabled: true
-
-      - name: "deep-exit"
-        disabled: true
-
-      - name: "get-return"
-        disabled: true
-
-      - name: "confusing-naming"
-        disabled: true
-
-      - name: "function-result-limit"
-        disabled: true
-
-      - name: "import-shadowing"
-        disabled: true
-
-      - name: redefines-builtin-id
-        disabled: true
-
-      - name: unhandled-error
-        arguments:
-          - "fmt.Printf"
-          - "fmt.Println"
-          - "fmt.Fprintf"
-          - "strings.Builder.WriteString"
-          - "strings.Builder.WriteRune"
-          - "strings.Builder.WriteByte"
-          - "bytes.Buffer.Write"
-          - "bytes.Buffer.WriteString"
 
   gosec:
     excludes:

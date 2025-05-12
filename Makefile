@@ -1,6 +1,6 @@
 BINARY_NAME = ezex-users
 BUILD_DIR = build
-CMD_DIR = ./internal/cmd/server/
+CMD_DIR = ./internal/cmd/ezex-users/
 
 # Default target
 all: build test
@@ -11,6 +11,7 @@ devtools:
 	@echo "Installing devtools"
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install mvdan.cc/gofumpt@latest
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 ########################################
 ### Building
@@ -78,3 +79,9 @@ docker-run:
 .PHONY: test
 .PHONY: fmt check
 .PHONY: run build release clean
+
+sqlc:
+	@echo "generate sql schema and queries..."
+	sqlc generate
+
+.PHONY: sqlc
