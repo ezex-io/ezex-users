@@ -1,0 +1,8 @@
+name = "ezeX Users"
+description = "ezeX user management service"
+
+[[permissions]]
+name = "Create User"
+description = "Allows creating new users"
+scope = "users"
+action = "create"
