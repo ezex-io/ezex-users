@@ -3,7 +3,6 @@ module github.com/ezex-io/ezex-users
 go 1.24.2
 
 require (
-	github.com/Sensifai-BV/artogenia v0.0.0-20250512080809-1c91af88f26d
 	github.com/ezex-io/ezex-proto/go/users v0.1.0
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/jackc/pgx/v5 v5.7.4

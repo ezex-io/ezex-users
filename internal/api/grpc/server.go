@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"fmt"
+	"github.com/ezex-io/ezex-users/pkg/logger"
 	"net"
 
-	"github.com/Sensifai-BV/artogenia/pkg/logger"
 	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/interactors/user"
 	"google.golang.org/grpc"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Sensifai-BV/artogenia/pkg/prompt"
 	"github.com/ezex-io/ezex-users/internal/apps"
 	"github.com/ezex-io/ezex-users/internal/config"
+	"github.com/ezex-io/ezex-users/internal/utils/prompt"
 	"github.com/spf13/cobra"
 )
 
