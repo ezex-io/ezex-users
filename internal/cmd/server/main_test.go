@@ -2,44 +2,41 @@ package main
 
 import (
 	"testing"
-	"time"
 
-	"github.com/ezex-io/ezex-users/internal/config"
-	"github.com/ezex-io/ezex-users/internal/controller"
-	"github.com/ezex-io/ezex-users/internal/core/port/service"
-	"github.com/ezex-io/ezex-users/internal/core/server"
-	"github.com/ezex-io/ezex-users/internal/infra/repository"
-	userspb "github.com/ezex-io/ezex-users/pkg/grpc"
-	"google.golang.org/grpc"
+	"github.com/ezex-io/ezex-proto/go/users"
+	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
+	"github.com/ezex-io/gopkg/logger"
+	"github.com/stretchr/testify/require"
+	grp "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 func TestServerStartupAndShutdown(t *testing.T) {
-	cfg, err := config.Load()
-	if err != nil {
-		t.Fatalf("Failed to load config: %v", err)
-	}
+	logging := logger.NewSlog(nil)
+	cfg := makeConfig()
+	require.NoError(t, cfg.BasicCheck())
+	require.NotNil(t, cfg)
 
-	service := service.NewService(repository.NewRepository())
+	cfg.GRPC.EnableHealthCheck = true
 
-	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress)
-
-	grpcErr := make(chan error, 1)
+	grpcServer := grpc.NewServer(cfg.GRPC, logging)
+	grpcServer.Register(func(s *grp.Server) {
+		users.RegisterUsersServiceServer(s, grpc.NewUserServer(nil, nil))
+	})
 
 	go func() {
-		grpcErr <- grpcServer.Start(func(s *grpc.Server) {
-			userspb.RegisterUsersServiceServer(s, controller.NewUserServer(service.User()))
-		})
+		err := grpcServer.Start()
+		require.NoError(t, err)
 	}()
 
-	time.Sleep(100 * time.Millisecond)
+	conn, err := grp.NewClient(cfg.GRPC.Address, grp.WithTransportCredentials(insecure.NewCredentials()))
+	require.NoError(t, err)
 
+	client := grpc_health_v1.NewHealthClient(conn)
+	resp, err := client.Check(t.Context(), &grpc_health_v1.HealthCheckRequest{})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.Equal(t, resp.Status, grpc_health_v1.HealthCheckResponse_SERVING)
 	grpcServer.Stop()
-
-	select {
-	case err := <-grpcErr:
-		if err != nil && err.Error() != "grpc: the server has been stopped" {
-			t.Errorf("gRPC server error: %v", err)
-		}
-	default:
-	}
 }
