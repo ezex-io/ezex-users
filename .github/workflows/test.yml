@@ -1,4 +1,4 @@
-name: Testing (Go)
+name: Testing
 permissions:
   contents: read
 
