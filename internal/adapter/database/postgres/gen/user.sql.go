@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createUser = `-- name: Create :exec
+const createUser = `-- name: CreateUser :exec
 INSERT INTO users (id, firebase_uuid, email)
 VALUES ($1, $2, $3)
 `

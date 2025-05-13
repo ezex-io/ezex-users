@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/ezex-io/ezex-proto/go/users"
-	"github.com/ezex-io/ezex-users/internal/entity"
+	"github.com/ezex-io/ezex-users/internal/port"
 )
 
-func (s *UserServer) ProcessFirebaseLogin(ctx context.Context,
-	req *users.ProcessFirebaseLoginRequest,
-) (*users.ProcessFirebaseLoginResponse, error) {
-	resp, err := s.auth.ProcessFirebaseLogin(ctx, &entity.ProcessFirebaseLoginRequest{
+func (s *UserServer) ProcessLogin(ctx context.Context,
+	req *users.ProcessLoginRequest,
+) (*users.ProcessLoginResponse, error) {
+	res, err := s.auth.ProcessLogin(ctx, &port.ProcessLoginRequest{
 		Email:       req.Email,
 		FirebaseUID: req.FirebaseUserId,
 	})
@@ -18,7 +18,7 @@ func (s *UserServer) ProcessFirebaseLogin(ctx context.Context,
 		return nil, err
 	}
 
-	return &users.ProcessFirebaseLoginResponse{
-		UserId: resp.UserID,
+	return &users.ProcessLoginResponse{
+		UserId: res.UserID,
 	}, nil
 }

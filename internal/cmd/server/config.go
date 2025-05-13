@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ezex-io/ezex-users/internal/adapter/db/postgres"
+	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres"
 	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
 )
 

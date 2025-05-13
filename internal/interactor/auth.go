@@ -4,34 +4,33 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ezex-io/ezex-users/internal/entity"
-	"github.com/ezex-io/ezex-users/internal/port/repository"
+	"github.com/ezex-io/ezex-users/internal/port"
 )
 
 type Auth struct {
-	userRepo repository.UserRepository
+	userDB port.UserDatabasePort
 }
 
-func NewAuth(userRepo repository.UserRepository) *Auth {
+func NewAuth(userDB port.UserDatabasePort) *Auth {
 	return &Auth{
-		userRepo: userRepo,
+		userDB: userDB,
 	}
 }
 
-func (a *Auth) ProcessFirebaseLogin(
+func (a *Auth) ProcessLogin(
 	ctx context.Context,
-	req *entity.ProcessFirebaseLoginRequest,
-) (*entity.ProcessFirebaseLoginResponse, error) {
-	user, err := a.userRepo.GetByEmail(ctx, &entity.GetUserByEmailRequest{
+	req *port.ProcessLoginRequest,
+) (*port.ProcessLoginResponse, error) {
+	user, err := a.userDB.GetUserByEmail(ctx, &port.GetUserByEmailRequest{
 		Email: req.Email,
 	})
 	if err == nil {
-		return &entity.ProcessFirebaseLoginResponse{
+		return &port.ProcessLoginResponse{
 			UserID: user.ID,
 		}, nil
 	}
 
-	newUser, err := a.userRepo.Create(ctx, &entity.CreateUserRequest{
+	newUser, err := a.userDB.CreateUser(ctx, &port.CreateUserRequest{
 		Email:       req.Email,
 		FirebaseUID: req.FirebaseUID,
 	})
@@ -39,7 +38,7 @@ func (a *Auth) ProcessFirebaseLogin(
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	return &entity.ProcessFirebaseLoginResponse{
+	return &port.ProcessLoginResponse{
 		UserID: newUser.UserID,
 	}, nil
 }

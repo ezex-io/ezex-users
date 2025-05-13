@@ -3,8 +3,8 @@ module github.com/ezex-io/ezex-users
 go 1.24.1
 
 require (
-	github.com/ezex-io/ezex-proto/go/users v0.0.0-20250513080503-adf60ae08cb3
-	github.com/ezex-io/gopkg/env v0.0.0-20250422074111-9c9f13c1b068
+	github.com/ezex-io/ezex-proto/go/users v0.0.0-20250513154926-1c8257acd7f6
+	github.com/ezex-io/gopkg/env v0.0.0-20250423183848-22b9bb75c16f
 	github.com/ezex-io/gopkg/logger v0.1.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.4

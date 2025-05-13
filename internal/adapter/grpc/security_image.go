@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	"github.com/ezex-io/ezex-proto/go/users"
-	"github.com/ezex-io/ezex-users/internal/entity"
+	"github.com/ezex-io/ezex-users/internal/port"
 )
 
 func (s *UserServer) SaveSecurityImage(
 	ctx context.Context,
 	req *users.SaveSecurityImageRequest,
 ) (*users.SaveSecurityImageResponse, error) {
-	err := s.securityImage.SaveSecurityImage(ctx, &entity.SaveSecurityImageRequest{
+	_, err := s.securityImage.SaveSecurityImage(ctx, &port.SaveSecurityImageRequest{
 		Email:          req.Email,
 		SecurityImage:  req.SecurityImage,
 		SecurityPhrase: req.SecurityPhrase,
@@ -28,7 +28,7 @@ func (s *UserServer) GetSecurityImage(
 	ctx context.Context,
 	req *users.GetSecurityImageRequest,
 ) (*users.GetSecurityImageResponse, error) {
-	resp, err := s.securityImage.GetSecurityImage(ctx, &entity.GetSecurityImageRequest{
+	res, err := s.securityImage.GetSecurityImage(ctx, &port.GetSecurityImageRequest{
 		Email: req.Email,
 	})
 	if err != nil {
@@ -36,7 +36,7 @@ func (s *UserServer) GetSecurityImage(
 	}
 
 	return &users.GetSecurityImageResponse{
-		SecurityImage:  resp.SecurityImage,
-		SecurityPhrase: resp.SecurityPhrase,
+		SecurityImage:  res.SecurityImage,
+		SecurityPhrase: res.SecurityPhrase,
 	}, nil
 }
