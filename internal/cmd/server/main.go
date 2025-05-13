@@ -8,10 +8,10 @@ import (
 	"syscall"
 
 	"github.com/ezex-io/ezex-proto/go/users"
-	"github.com/ezex-io/ezex-users/internal/adapter/db/postgres"
+	"github.com/ezex-io/ezex-users/internal/adapter/database"
+	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres"
 	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
 	"github.com/ezex-io/ezex-users/internal/interactor"
-	"github.com/ezex-io/ezex-users/internal/repository"
 	"github.com/ezex-io/gopkg/env"
 	"github.com/ezex-io/gopkg/logger"
 	grp "google.golang.org/grpc"
@@ -39,11 +39,11 @@ func main() {
 
 	grpcServer := grpc.NewServer(cfg.GRPC, logging)
 
-	secImageRepo := repository.NewSecurityImage(dbs.Query())
-	userRepo := repository.NewUser(dbs.Query())
+	secImageDb := database.NewSecurityImage(dbs.Query())
+	userDB := database.NewUser(dbs.Query())
 
-	secImageInteractor := interactor.NewSecurityImage(secImageRepo)
-	authInteractor := interactor.NewAuth(userRepo)
+	secImageInteractor := interactor.NewSecurityImage(secImageDb)
+	authInteractor := interactor.NewAuth(userDB)
 
 	grpcServer.Register(func(s *grp.Server) {
 		users.RegisterUsersServiceServer(s, grpc.NewUserServer(secImageInteractor, authInteractor))

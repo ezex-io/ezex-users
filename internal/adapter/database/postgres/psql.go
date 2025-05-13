@@ -4,17 +4,16 @@ import (
 	"context"
 	"time"
 
-	"github.com/ezex-io/ezex-users/internal/adapter/db/postgres/gen"
-	"github.com/ezex-io/ezex-users/internal/port"
+	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres/gen"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type postgres struct {
+type Postgres struct {
 	db   *gen.Queries
 	conn *pgxpool.Pool
 }
 
-func New(cfg *Config) (port.PostgresPort, error) {
+func New(cfg *Config) (*Postgres, error) {
 	connString := cfg.uri()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
@@ -41,16 +40,16 @@ func New(cfg *Config) (port.PostgresPort, error) {
 		return nil, err
 	}
 
-	return &postgres{
+	return &Postgres{
 		conn: conn,
 		db:   gen.New(conn),
 	}, nil
 }
 
-func (p *postgres) Close() {
+func (p *Postgres) Close() {
 	p.conn.Close()
 }
 
-func (p *postgres) Query() *gen.Queries {
+func (p *Postgres) Query() *gen.Queries {
 	return p.db
 }

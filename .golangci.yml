@@ -74,6 +74,7 @@ linters:
     - whitespace
     - zerologlint
     - varnamelen
+    - ireturn
 
 linters-settings:
   gosimple:
@@ -149,7 +150,8 @@ linters-settings:
 
   stylecheck:
     # ST1000: at least one file in a package should have a package comment
-    checks: ["all", "-ST1000"]
+    # ST1003: should not use underscores in package names
+    checks: ["all", "-ST1000", "-ST1003"]
 
   govet:
     enable-all: true
@@ -174,16 +176,6 @@ linters-settings:
       rules:
         json: snake
         yaml: snake
-
-  # gocritic:
-  #   disabled-checks:
-  #     - ifElseChain
-  #     - unnamedResult
-  #     - importShadow
-  #   enabled-tags:
-  #     - diagnostic
-  #     - style
-  #     - performance
 
   nestif:
     # Minimal complexity of if statements to report.
@@ -226,3 +218,4 @@ issues:
     - 'builtinShadow: shadowing of predeclared identifier: min'
     - 'builtinShadow: shadowing of predeclared identifier: max'
     - 'builtinShadow: shadowing of predeclared identifier: len'
+    - 'var-naming: don''t use an underscore in package name'

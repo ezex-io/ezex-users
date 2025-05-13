@@ -34,9 +34,9 @@ func TestServerStartupAndShutdown(t *testing.T) {
 	require.NoError(t, err)
 
 	client := grpc_health_v1.NewHealthClient(conn)
-	resp, err := client.Check(t.Context(), &grpc_health_v1.HealthCheckRequest{})
+	res, err := client.Check(t.Context(), &grpc_health_v1.HealthCheckRequest{})
 	require.NoError(t, err)
-	require.NotNil(t, resp)
-	require.Equal(t, resp.Status, grpc_health_v1.HealthCheckResponse_SERVING)
+	require.NotNil(t, res)
+	require.Equal(t, res.Status, grpc_health_v1.HealthCheckResponse_SERVING)
 	grpcServer.Stop()
 }

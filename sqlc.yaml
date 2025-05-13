@@ -2,12 +2,12 @@ version: "2"
 
 sql:
   - engine: "postgresql"
-    schema: "migrations"
-    queries: "internal/adapter/db/postgres/queries"
+    schema: "internal/adapter/database/postgres/migrations"
+    queries: "internal/adapter/database/postgres/queries"
     gen:
       go:
         package: "gen"
-        out: "internal/adapter/db/postgres/gen"
+        out: "internal/adapter/database/postgres/gen"
         sql_package: "pgx/v5"
         emit_json_tags: true
         emit_prepared_queries: true
