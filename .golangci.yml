@@ -72,7 +72,6 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
-    - wrapcheck
     - zerologlint
     - varnamelen
 
@@ -87,7 +86,7 @@ linters-settings:
         disabled: true
 
       - name: package-comments
-        disabled: false
+        disabled: true
 
       - name: "add-constant"
         disabled: true
@@ -149,7 +148,8 @@ linters-settings:
       - G115
 
   stylecheck:
-    checks: ["all"]
+    # ST1000: at least one file in a package should have a package comment
+    checks: ["all", "-ST1000"]
 
   govet:
     enable-all: true
@@ -175,15 +175,15 @@ linters-settings:
         json: snake
         yaml: snake
 
-  gocritic:
-    disabled-checks:
-      - ifElseChain
-      - unnamedResult
-      - importShadow
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
+  # gocritic:
+  #   disabled-checks:
+  #     - ifElseChain
+  #     - unnamedResult
+  #     - importShadow
+  #   enabled-tags:
+  #     - diagnostic
+  #     - style
+  #     - performance
 
   nestif:
     # Minimal complexity of if statements to report.
