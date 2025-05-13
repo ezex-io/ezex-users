@@ -2,57 +2,69 @@
 package main
 
 import (
-	"context"
+	"flag"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/ezex-io/ezex-users/internal/config"
-	"github.com/ezex-io/ezex-users/internal/controller"
-	"github.com/ezex-io/ezex-users/internal/core/port/service"
-	"github.com/ezex-io/ezex-users/internal/core/server"
-	"github.com/ezex-io/ezex-users/internal/infra/repository"
-	userspb "github.com/ezex-io/ezex-users/pkg/grpc"
+	"github.com/ezex-io/ezex-proto/go/users"
+	"github.com/ezex-io/ezex-users/internal/adapter/db/postgres"
+	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
+	"github.com/ezex-io/ezex-users/internal/interactor"
+	"github.com/ezex-io/ezex-users/internal/repository"
+	"github.com/ezex-io/gopkg/env"
 	"github.com/ezex-io/gopkg/logger"
-	"google.golang.org/grpc"
+	grp "google.golang.org/grpc"
 )
 
 func main() {
-	log := logger.NewSlog(nil)
-	cfg, err := config.Load()
+	envFile := flag.String("env", ".env", "Path to environment file")
+	flag.Parse()
+
+	logging := logger.NewSlog(nil)
+
+	if err := env.LoadEnvsFromFile(*envFile); err != nil {
+		logging.Debug("Failed to load env file '%s': %v. Continuing with system environment...", *envFile, err)
+	}
+
+	cfg := makeConfig()
+	if err := cfg.BasicCheck(); err != nil {
+		logging.Fatal("failed to load config: %v", err)
+	}
+
+	dbs, err := postgres.New(cfg.Database)
 	if err != nil {
-		log.Error("Failed to load config", "error", err)
-
-		return
+		logging.Fatal("failed to connect to database", "err", err)
 	}
 
-	repo := repository.NewRepository()
+	grpcServer := grpc.NewServer(cfg.GRPC, logging)
 
-	svc := service.NewService(repo)
+	secImageRepo := repository.NewSecurityImage(dbs.Query())
+	userRepo := repository.NewUser(dbs.Query())
 
-	grpcServer := server.NewGRPCServer(cfg.GRPCServerAddress)
+	secImageInteractor := interactor.NewSecurityImage(secImageRepo)
+	authInteractor := interactor.NewAuth(userRepo)
 
-	log.Info("Starting gRPC server", "address", cfg.GRPCServerAddress)
-	if err := grpcServer.Start(
-		func(s *grpc.Server) {
-			userspb.RegisterUsersServiceServer(s, controller.NewUserServer(svc.User()))
-		},
-	); err != nil {
-		log.Error("Failed to start gRPC server", "error", err)
+	grpcServer.Register(func(s *grp.Server) {
+		users.RegisterUsersServiceServer(s, grpc.NewUserServer(secImageInteractor, authInteractor))
+		logging.Debug("user service registered")
+	})
 
-		return
+	logging.Info("Starting gRPC grpc", "address", cfg.GRPC.Address)
+	if err := grpcServer.Start(); err != nil {
+		logging.Fatal("Failed to start gRPC grpc", "error", err)
 	}
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	go func() {
+	select {
+	case s := <-sig:
+		logging.Warn("Received signal, shutting down...", "signal", s)
 		grpcServer.Stop()
-	}()
-
-	<-ctx.Done()
+		dbs.Close()
+	case err := <-grpcServer.Notify():
+		logging.Error("gRPC grpc server error", "error", err)
+		dbs.Close()
+	}
 }

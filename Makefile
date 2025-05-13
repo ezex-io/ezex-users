@@ -73,6 +73,11 @@ docker-run:
 		--name ezex-users \
 		ezex-users:latest
 
+########################################
+### SQLC generate sql
+sqlc:
+	sqlc generate .
+
 .PHONY: docker docker-build docker-run
 .PHONY: devtools proto docker
 .PHONY: test
