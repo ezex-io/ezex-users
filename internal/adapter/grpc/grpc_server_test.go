@@ -1,4 +1,4 @@
-package main
+package grpc_test
 
 import (
 	"testing"
@@ -14,13 +14,13 @@ import (
 
 func TestServerStartupAndShutdown(t *testing.T) {
 	logging := logger.NewSlog(nil)
-	cfg := makeConfig()
+	cfg := grpc.LoadFromEnv()
 	require.NoError(t, cfg.BasicCheck())
 	require.NotNil(t, cfg)
 
-	cfg.GRPC.EnableHealthCheck = true
+	cfg.EnableHealthCheck = true
 
-	grpcServer := grpc.NewServer(cfg.GRPC, logging)
+	grpcServer := grpc.NewServer(cfg, logging)
 	grpcServer.Register(func(s *grp.Server) {
 		users.RegisterUsersServiceServer(s, grpc.NewUserServer(nil, nil))
 	})
@@ -30,7 +30,7 @@ func TestServerStartupAndShutdown(t *testing.T) {
 		require.NoError(t, err)
 	}()
 
-	conn, err := grp.NewClient(cfg.GRPC.Address, grp.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grp.NewClient(cfg.Address, grp.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
 	client := grpc_health_v1.NewHealthClient(conn)
