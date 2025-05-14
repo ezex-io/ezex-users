@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 
+	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres/gen"
-	"github.com/ezex-io/ezex-users/internal/port"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -18,8 +18,8 @@ func NewSecurityImage(query *gen.Queries) *SecurityImage {
 	}
 }
 
-func (s *SecurityImage) SaveSecurityImage(ctx context.Context, req *port.SaveSecurityImageRequest) (
-	*port.SaveSecurityImageResponse, error,
+func (s *SecurityImage) SaveSecurityImage(ctx context.Context, req *users.SaveSecurityImageRequest) (
+	*users.SaveSecurityImageResponse, error,
 ) {
 	err := s.query.SaveSecurityImage(ctx, gen.SaveSecurityImageParams{
 		Email: req.Email,
@@ -36,20 +36,20 @@ func (s *SecurityImage) SaveSecurityImage(ctx context.Context, req *port.SaveSec
 		return nil, err
 	}
 
-	return &port.SaveSecurityImageResponse{
+	return &users.SaveSecurityImageResponse{
 		Email: req.Email,
 	}, nil
 }
 
 func (s *SecurityImage) GetSecurityImage(ctx context.Context,
-	req *port.GetSecurityImageRequest,
-) (*port.GetSecurityImageResponse, error) {
+	req *users.GetSecurityImageRequest,
+) (*users.GetSecurityImageResponse, error) {
 	sec, err := s.query.GetSecurityImageByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	return &port.GetSecurityImageResponse{
+	return &users.GetSecurityImageResponse{
 		SecurityImage:  sec.SecurityImage.String,
 		SecurityPhrase: sec.SecurityPhrase.String,
 	}, nil

@@ -12,6 +12,19 @@ devtools:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install mvdan.cc/gofumpt@latest
 
+proto:
+	@mkdir -p ./pkg/grpc
+	protoc --go_out=./pkg/grpc --go_opt paths=source_relative \
+		   --go-grpc_out=./pkg/grpc --go-grpc_opt paths=source_relative \
+		   --proto_path=./pkg/proto ./pkg/proto/*.proto
+
+# SQLC generate sql
+sqlc:
+	sqlc generate .
+
+mock:
+	mockgen -source=./internal/port/database.go	-destination=./internal/mock/mock_database.go	-package=mock
+
 ########################################
 ### Building
 build:
@@ -39,20 +52,6 @@ fmt:
 check:
 	golangci-lint run --timeout=20m0s
 
-.PHONY: devtools
-.PHONY: build release
-.PHONY: test
-.PHONY: fmt check
-	go build -o ./bin/ezex-users$(EXE) ./cmd/server/main.go
-
-########################################
-### Proto
-proto:
-	@mkdir -p ./pkg/grpc
-	protoc --go_out=./pkg/grpc --go_opt paths=source_relative \
-		   --go-grpc_out=./pkg/grpc --go-grpc_opt paths=source_relative \
-		   --proto_path=./pkg/proto ./pkg/proto/*.proto
-
 ########################################
 ### Run
 run: build
@@ -73,12 +72,7 @@ docker-run:
 		--name ezex-users \
 		ezex-users:latest
 
-########################################
-### SQLC generate sql
-sqlc:
-	sqlc generate .
-
-.PHONY: docker docker-build docker-run
+.PHONY: docker docker-build docker-run mock sqlc
 .PHONY: devtools proto docker
 .PHONY: test
 .PHONY: fmt check

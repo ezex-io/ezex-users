@@ -46,7 +46,7 @@ func main() {
 	authInteractor := interactor.NewAuth(userDB)
 
 	grpcServer.Register(func(s *grp.Server) {
-		users.RegisterUsersServiceServer(s, grpc.NewUserServer(secImageInteractor, authInteractor))
+		users.RegisterUsersServiceServer(s, grpc.NewUsersService(secImageInteractor, authInteractor))
 		logging.Debug("user service registered")
 	})
 
