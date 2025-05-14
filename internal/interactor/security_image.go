@@ -3,29 +3,30 @@ package interactor
 import (
 	"context"
 
+	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/port"
 )
 
 type SecurityImage struct {
-	db port.SecurityImageDatabasePort
+	db port.SecurityImageDBPort
 }
 
-func NewSecurityImage(db port.SecurityImageDatabasePort) *SecurityImage {
+func NewSecurityImage(db port.SecurityImageDBPort) *SecurityImage {
 	return &SecurityImage{
 		db: db,
 	}
 }
 
-func (u *SecurityImage) SaveSecurityImage(
+func (s *SecurityImage) SaveSecurityImage(
 	ctx context.Context,
-	req *port.SaveSecurityImageRequest,
-) (*port.SaveSecurityImageResponse, error) {
-	return u.db.SaveSecurityImage(ctx, req)
+	req *users.SaveSecurityImageRequest,
+) (*users.SaveSecurityImageResponse, error) {
+	return s.db.SaveSecurityImage(ctx, req)
 }
 
-func (u *SecurityImage) GetSecurityImage(
+func (s *SecurityImage) GetSecurityImage(
 	ctx context.Context,
-	req *port.GetSecurityImageRequest,
-) (*port.GetSecurityImageResponse, error) {
-	return u.db.GetSecurityImage(ctx, req)
+	req *users.GetSecurityImageRequest,
+) (*users.GetSecurityImageResponse, error) {
+	return s.db.GetSecurityImage(ctx, req)
 }

@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 
+	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres/gen"
-	"github.com/ezex-io/ezex-users/internal/port"
 	"github.com/google/uuid"
 )
 
@@ -19,36 +19,32 @@ func NewUser(query *gen.Queries) *UserDatabase {
 }
 
 func (u *UserDatabase) CreateUser(ctx context.Context,
-	req *port.CreateUserRequest,
-) (*port.CreateUserResponse, error) {
+	req *users.CreateUserRequest,
+) (*users.CreateUserResponse, error) {
 	uid := uuid.New()
 
 	if err := u.query.CreateUser(ctx, gen.CreateUserParams{
 		ID:           uid,
 		Email:        req.Email,
-		FirebaseUuid: req.FirebaseUID,
+		FirebaseUuid: req.FirebaseUid,
 	}); err != nil {
 		return nil, err
 	}
 
-	return &port.CreateUserResponse{
-		UserID: uid.String(),
+	return &users.CreateUserResponse{
+		UserId: uid.String(),
 	}, nil
 }
 
 func (u *UserDatabase) GetUserByEmail(ctx context.Context,
-	req *port.GetUserByEmailRequest,
-) (*port.GetUserByEmailResponse, error) {
+	req *users.GetUserByEmailRequest,
+) (*users.GetUserByEmailResponse, error) {
 	user, err := u.query.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	return &port.GetUserByEmailResponse{
-		ID:             user.ID.String(),
-		Email:          user.Email,
-		FirebaseUID:    user.FirebaseUuid,
-		SecurityImage:  user.SecurityImage.String,
-		SecurityPhrase: user.SecurityPhrase.String,
+	return &users.GetUserByEmailResponse{
+		Email: user.Email,
 	}, nil
 }
