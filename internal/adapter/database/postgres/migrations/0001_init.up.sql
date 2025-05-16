@@ -6,4 +6,4 @@ CREATE TABLE users (
     security_phrase TEXT
 );
 
-CREATE INDEX idx_users_firebase_uuid ON users(firebase_uuid); 
+CREATE INDEX idx_users_firebase_uuid ON users(firebase_uuid);
