@@ -24,7 +24,7 @@ var (
 func Setup() {
 	setupOnce.Do(func() {
 		// load from project root
-		envFile := "../../../.env.test"
+		envFile := "../../../.env.example"
 		if err := env.LoadEnvsFromFile(envFile); err != nil {
 			log.Printf("Failed to load %s: %v. Using default test settings.\n", envFile, err)
 		} else {

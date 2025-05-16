@@ -46,20 +46,8 @@ test:
 	go test -v ./... -short
 
 # Run only integration tests
-test-integration: test-db-up
-	go test -v ./internal/test/integration/...
-	$(MAKE) test-db-down
-
-# Spin up the test database
-test-db-up:
-	docker-compose -f docker-compose.test.yml up -d
-	@echo "Waiting for database to be ready..."
-	@sleep 5
-
-# Tear down the test database
-test-db-down:
-	docker-compose -f docker-compose.test.yml down
-
+test-integration:
+	./run-test-integrations.sh
 
 ########################################
 ### Formatting the code
@@ -91,6 +79,6 @@ docker-run:
 
 .PHONY: docker docker-build docker-run mock sqlc
 .PHONY: devtools proto docker
-.PHONY: test test-integration test-db-up test-db-down
+.PHONY: test
 .PHONY: fmt check
 .PHONY: run build release clean
