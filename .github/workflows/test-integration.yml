@@ -5,32 +5,13 @@ permissions:
 on:
   push:
     branches: ["main"]
-    paths:
-      - 'internal/**'
-      - 'pkg/**'
-      - 'go.mod'
-      - 'go.sum'
-      - '.env.example'
-      - 'run-test-integrations.sh'
-      - 'docker-compose.test.yml'
-      - '.github/workflows/test-integration.yml'
+
   pull_request:
     branches: ["main"]
-    paths:
-      - 'internal/**'
-      - 'pkg/**'
-      - 'go.mod'
-      - 'go.sum'
-      - '.env.example'
-      - 'run-test-integrations.sh'
-      - 'docker-compose.test.yml'
-      - '.github/workflows/test-integration.yml'
-  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     services:
       postgres:
@@ -69,23 +50,11 @@ jobs:
       - name: Download Go dependencies
         run: go mod download
 
-      - name: Setup Docker Compose
-        uses: KengoTODA/actions-setup-docker-compose@main
-        with:
-          version: 'v2.21.0'
-
-      - name: Setup .env.example
-        run: |
-          cat > .env.example << EOL
-          EZEX_USERS_DB_ADDRESS=localhost:5432
-          EZEX_USERS_DB_DATABASE=postgres
-          EZEX_USERS_DB_USERNAME=postgres
-          EZEX_USERS_DB_PASSWORD=postgres
-          EZEX_USERS_DB_PORT=5432
-          EOL
-
-      - name: Make scripts executable
-        run: chmod +x ./run-test-integrations.sh
-
       - name: Run Integration Tests
-        run: ./run-test-integrations.sh 
+        env:
+          EZEX_USERS_DB_ADDRESS: localhost:5432
+          EZEX_USERS_DB_DATABASE: postgres
+          EZEX_USERS_DB_USERNAME: postgres
+          EZEX_USERS_DB_PASSWORD: postgres
+          EZEX_USERS_DB_PORT: 5432
+        run: make test-integration

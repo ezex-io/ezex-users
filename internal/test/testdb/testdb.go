@@ -131,7 +131,7 @@ func NewPostgresDB(t *testing.T) *PostgresDB {
 	}
 }
 
-func (tdb *PostgresDB) Close() {
+func (tdb *PostgresDB) Cleanup() {
 	tdb.t.Helper()
 
 	pool := tdb.Pool
@@ -158,15 +158,6 @@ func (tdb *PostgresDB) Close() {
 	if err != nil {
 		tdb.t.Logf("Failed to drop test database: %v", err)
 	}
-}
-
-func (tdb *PostgresDB) Reset() {
-	tdb.t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	err := postgres.ResetDB(ctx, tdb.Pool)
-	require.NoError(tdb.t, err)
 }
 
 func buildConnectionString(address, database, username, password string) string {

@@ -43,11 +43,11 @@ clean:
 ### Testing
 # Run only unit tests
 test:
-	go test -v ./... -short
+	go test ./... -short
 
 # Run only integration tests
 test-integration:
-	./run-test-integrations.sh
+	go test ./internal/test/...
 
 ########################################
 ### Formatting the code
