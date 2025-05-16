@@ -3,7 +3,6 @@ package grpc_test
 import (
 	"testing"
 
-	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
 	"github.com/ezex-io/gopkg/logger"
 	"github.com/stretchr/testify/require"
@@ -20,15 +19,11 @@ func TestServerStartupAndShutdown(t *testing.T) {
 
 	cfg.EnableHealthCheck = true
 
-	grpcServer := grpc.NewServer(cfg, logging)
-	grpcServer.Register(func(s *grp.Server) {
-		users.RegisterUsersServiceServer(s, grpc.NewUsersService(nil, nil))
-	})
+	service := grpc.NewUsersService(nil, nil)
+	grpcServer, err := grpc.NewServer(cfg, logging, service)
+	require.NoError(t, err)
 
-	go func() {
-		err := grpcServer.Start()
-		require.NoError(t, err)
-	}()
+	grpcServer.Start()
 
 	conn, err := grp.NewClient(cfg.Address, grp.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)

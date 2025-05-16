@@ -3,18 +3,14 @@ package main
 
 import (
 	"flag"
-	"os"
-	"os/signal"
-	"syscall"
 
-	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/ezex-users/internal/adapter/database"
 	"github.com/ezex-io/ezex-users/internal/adapter/database/postgres"
 	"github.com/ezex-io/ezex-users/internal/adapter/grpc"
 	"github.com/ezex-io/ezex-users/internal/interactor"
 	"github.com/ezex-io/gopkg/env"
 	"github.com/ezex-io/gopkg/logger"
-	grp "google.golang.org/grpc"
+	"github.com/ezex-io/gopkg/utils"
 )
 
 func main() {
@@ -37,34 +33,27 @@ func main() {
 		logging.Fatal("failed to connect to database", "err", err)
 	}
 
-	grpcServer := grpc.NewServer(cfg.GRPC, logging)
-
 	secImageDb := database.NewSecurityImage(dbs.Query())
 	userDB := database.NewUser(dbs.Query())
 
 	secImageInteractor := interactor.NewSecurityImage(secImageDb)
 	authInteractor := interactor.NewAuth(userDB)
 
-	grpcServer.Register(func(s *grp.Server) {
-		users.RegisterUsersServiceServer(s, grpc.NewUsersService(secImageInteractor, authInteractor))
-		logging.Debug("user service registered")
+	usersService := grpc.NewUsersService(secImageInteractor, authInteractor)
+
+	server, err := grpc.NewServer(cfg.GRPC, logging, usersService)
+	if err != nil {
+		logging.Fatal("failed to create gRPC server: %v", err)
+	}
+
+	server.Start()
+
+	utils.TrapSignal(func() {
+		logging.Info("Exiting...")
+
+		server.Stop()
 	})
 
-	logging.Info("Starting gRPC grpc", "address", cfg.GRPC.Address)
-	if err := grpcServer.Start(); err != nil {
-		logging.Fatal("Failed to start gRPC grpc", "error", err)
-	}
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-
-	select {
-	case s := <-sig:
-		logging.Warn("Received signal, shutting down...", "signal", s)
-		grpcServer.Stop()
-		dbs.Close()
-	case err := <-grpcServer.Notify():
-		logging.Error("gRPC grpc server error", "error", err)
-		dbs.Close()
-	}
+	// run forever
+	select {}
 }
