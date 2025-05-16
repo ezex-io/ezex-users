@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${EZEX_USERS_DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${EZEX_USERS_DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${EZEX_USERS_DB_DATABASE:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - ezex_users_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${EZEX_USERS_DB_USERNAME:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  ezex_users_postgres_data: 
