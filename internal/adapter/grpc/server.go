@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/ezex-io/ezex-proto/go/users"
 	"github.com/ezex-io/gopkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -12,54 +13,49 @@ import (
 )
 
 type Server struct {
-	server  *grpc.Server
-	logging logger.Logger
-	addr    string
-	errCh   chan error
+	server   *grpc.Server
+	listener net.Listener
+	logger   logger.Logger
 }
 
-func NewServer(cfg *Config, logging logger.Logger) *Server {
-	srv := &Server{
-		server:  grpc.NewServer(),
-		addr:    cfg.Address,
-		errCh:   make(chan error),
-		logging: logging,
-	}
-
-	if cfg.EnableHealthCheck {
-		grpc_health_v1.RegisterHealthServer(srv.server, health.NewServer())
-		logging.Info("gRPC health check enabled")
-	}
-
-	if cfg.EnableReflection {
-		reflection.Register(srv.server)
-		logging.Info("gRPC reflection enabled")
-	}
-
-	return srv
-}
-
-func (s *Server) Start() error {
-	listener, err := net.Listen("tcp", s.addr)
+func NewServer(conf *Config, logger logger.Logger, usersService *UsersService) (*Server, error) {
+	listener, err := net.Listen("tcp", conf.Address)
 	if err != nil {
-		return fmt.Errorf("failed to listen: %w", err)
+		return nil, fmt.Errorf("failed to listen on port: %w", err)
 	}
 
+	server := grpc.NewServer()
+	users.RegisterUsersServiceServer(server, usersService)
+
+	if conf.EnableHealthCheck {
+		grpc_health_v1.RegisterHealthServer(server, health.NewServer())
+		logger.Info("gRPC health check enabled")
+	}
+
+	if conf.EnableReflection {
+		reflection.Register(server)
+		logger.Info("gRPC reflection enabled")
+	}
+
+	return &Server{
+		server:   server,
+		listener: listener,
+		logger:   logger,
+	}, nil
+}
+
+func (s *Server) Start() {
 	go func() {
-		s.errCh <- s.server.Serve(listener)
+		s.logger.Info("gRPC server start listening", "address", s.listener.Addr())
+		if err := s.server.Serve(s.listener); err != nil {
+			s.logger.Debug("error on gRPC server", "error", err)
+		}
 	}()
-
-	return nil
-}
-
-func (s *Server) Register(regFunc func(s *grpc.Server)) {
-	regFunc(s.server)
-}
-
-func (s *Server) Notify() <-chan error {
-	return s.errCh
 }
 
 func (s *Server) Stop() {
-	s.server.GracefulStop()
+	if s.server != nil {
+		s.server.Stop()
+		_ = s.listener.Close()
+	}
 }

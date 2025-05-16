@@ -4,12 +4,12 @@ go 1.24.1
 
 require (
 	github.com/ezex-io/ezex-proto/go/users v0.0.0-20250514161631-d4a0f7e670ab
-	github.com/ezex-io/gopkg/env v0.0.0-20250423183848-22b9bb75c16f
-	github.com/ezex-io/gopkg/logger v0.1.2
+	github.com/ezex-io/gopkg/env v0.0.0-20250516110026-cbaeced8e963
+	github.com/ezex-io/gopkg/logger v0.0.0-20250516110026-cbaeced8e963
+	github.com/ezex-io/gopkg/utils v0.0.0-20250516110026-cbaeced8e963
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/stretchr/testify v1.10.0
-	go.uber.org/mock v0.5.2
 	google.golang.org/grpc v1.72.1
 )
 

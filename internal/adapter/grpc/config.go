@@ -12,7 +12,7 @@ type Config struct {
 func LoadFromEnv() *Config {
 	cfg := &Config{
 		Address:           env.GetEnv[string]("EZEX_USERS_GRPC_ADDRESS", env.WithDefault("0.0.0.0:50051")),
-		EnableHealthCheck: env.GetEnv[bool]("EZEX_USERS_GRPC_ENABLE_HEALTHCHECK", env.WithDefault("false")),
+		EnableHealthCheck: env.GetEnv[bool]("EZEX_USERS_GRPC_ENABLE_HEALTH_CHECK", env.WithDefault("false")),
 		EnableReflection:  env.GetEnv[bool]("EZEX_USERS_GRPC_ENABLE_REFLECTION", env.WithDefault("false")),
 	}
 
