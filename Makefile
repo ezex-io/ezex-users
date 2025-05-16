@@ -91,6 +91,6 @@ docker-run:
 
 .PHONY: docker docker-build docker-run mock sqlc
 .PHONY: devtools proto docker
-.PHONY: test test-unit test-integration test-db-up test-db-down migrate
+.PHONY: test test-integration test-db-up test-db-down
 .PHONY: fmt check
 .PHONY: run build release clean
