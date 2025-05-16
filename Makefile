@@ -41,8 +41,13 @@ clean:
 
 ########################################
 ### Testing
+# Run only unit tests
 test:
-	go test ./...
+	go test ./... -short
+
+# Run only integration tests
+test-integration:
+	go test ./internal/test/...
 
 ########################################
 ### Formatting the code
@@ -74,6 +79,6 @@ docker-run:
 
 .PHONY: docker docker-build docker-run mock sqlc
 .PHONY: devtools proto docker
-.PHONY: test
+.PHONY: test test-integration
 .PHONY: fmt check
 .PHONY: run build release clean

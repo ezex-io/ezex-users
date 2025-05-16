@@ -21,11 +21,38 @@ make build
 
 ## Test
 
-To run the tests, use:
+### Unit Tests
+
+To run unit tests, use:
 
 ```bash
 make test
 ```
+
+### Integration Tests
+
+The project includes integration tests that require a PostgreSQL database. To run them:
+
+```bash
+make test-integration
+```
+
+Integration tests use these environment variables:
+
+```conf
+EZEX_USERS_DB_ADDRESS=localhost:5432  # Host:port for test database
+EZEX_USERS_DB_DATABASE=postgres       # Database name
+EZEX_USERS_DB_USERNAME=postgres       # Database username
+EZEX_USERS_DB_PASSWORD=postgres       # Database password
+```
+
+Modify `.env` with your custom settings.
+
+When running integration tests, the system will:
+- Create a temporary test database with a unique name
+- Apply all migrations
+- Run the tests against it
+- Drop the database when tests complete
 
 ## Code Quality and Formatting
 

@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 
 	"github.com/ezex-io/ezex-users/internal/adapter/database"
@@ -32,6 +33,12 @@ func main() {
 	if err != nil {
 		logging.Fatal("failed to connect to database", "err", err)
 	}
+
+	// run migrations
+	if err := postgres.MigrateDB(context.Background(), dbs.GetPool()); err != nil {
+		logging.Fatal("failed to run migrations", "err", err)
+	}
+	logging.Info("Database migrations completed successfully")
 
 	secImageDb := database.NewSecurityImage(dbs.Query())
 	userDB := database.NewUser(dbs.Query())
