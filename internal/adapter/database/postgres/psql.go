@@ -53,3 +53,7 @@ func (p *Postgres) Close() {
 func (p *Postgres) Query() *gen.Queries {
 	return p.db
 }
+
+func (p *Postgres) GetPool() *pgxpool.Pool {
+	return p.conn
+}
