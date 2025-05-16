@@ -44,7 +44,6 @@ EZEX_USERS_DB_ADDRESS=localhost:5432  # Host:port for test database
 EZEX_USERS_DB_DATABASE=postgres       # Database name
 EZEX_USERS_DB_USERNAME=postgres       # Database username
 EZEX_USERS_DB_PASSWORD=postgres       # Database password
-EZEX_USERS_DB_PORT=5432               # Port for PostgreSQL container
 ```
 
 Modify `.env` with your custom settings.
