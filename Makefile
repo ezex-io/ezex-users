@@ -52,10 +52,14 @@ test-integration:
 ########################################
 ### Formatting the code
 fmt:
-	gofumpt -l -w .
+	@echo "Formatting code..."
+	@go tool gofumpt -l -w .
 
-check:
-	golangci-lint run --timeout=20m0s
+lint:
+	@echo "Running lint..."
+	@go tool golangci-lint  run ./... --timeout=20m0s
+
+check: fmt lint
 
 ########################################
 ### Run
@@ -80,5 +84,5 @@ docker-run:
 .PHONY: docker docker-build docker-run mock sqlc
 .PHONY: devtools proto docker
 .PHONY: test test-integration
-.PHONY: fmt check
+.PHONY: fmt lint check
 .PHONY: run build release clean
